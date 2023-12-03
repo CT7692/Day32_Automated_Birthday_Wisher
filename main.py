@@ -5,20 +5,12 @@ import smtplib
 import os
 import pandas as p
 
-def check_birthday():
-    try:
-        month_row = bday_data[bday_data.month == now.month]
-        entry = month_row[month_row.day == now.day]
-    except KeyError:
-        messagebox.showwarning(title="Key Error", message="This data cannot be found.")
-    else:
-        return entry
 
 def write_and_send():
         try:
             with open(file=f"{folder}\\{letter}", mode="r") as email_data:
                 template = email_data.read()
-                email = template.replace("[NAME]", f"{data_entry.name.iloc[0]}")
+                email = template.replace("[NAME]", f'{bday_dict[day]["name"]}')
 
             with smtplib.SMTP("smtp.gmail.com", port=587) as connection:
                 connection.starttls()
@@ -29,18 +21,25 @@ def write_and_send():
         except FileNotFoundError:
             messagebox.showwarning(title="File Not Found", message="This file does not exist.")
         except IndexError:
-            messagebox.showwarning(title="No Birthdays", message="No data of registered birthdays today.")
-        else:
-            messagebox.showinfo(title="Confirmation", message="Email sent successfully.")
+            messagebox.showwarning(title="Index Error", message="There was an index error.")
 
 
-bday_data = p.read_csv("birthdays.csv")
+def get_dict(data_file):
+    bday_data = p.read_csv(data_file)
+    dict = bday_data.to_dict(orient="index")
+    my_dict = {(dict[i]["month"], dict[i]["day"]): dict[i] for i in dict}
+    return  my_dict
+
 now = datetime.now()
-folder = "letter_templates"
-my_email = "jrydel92@gmail.com"
-my_pw = "123"
-letter_list = os.listdir(folder)
-data_entry = check_birthday()
-letter = choice(letter_list)
-write_and_send()
+day = (now.month, now.day)
+
+bday_dict = get_dict("birthdays.csv")
+if day in bday_dict:
+    folder = "letter_templates"
+    my_email = "jrydel92@gmail.com"
+    my_pw = "123"
+    letter_list = os.listdir(folder)
+    letter = choice(letter_list)
+    write_and_send()
+
 
