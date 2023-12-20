@@ -37,9 +37,7 @@ bday_dict = get_dict("birthdays.csv")
 if day in bday_dict:
     folder = "letter_templates"
     my_email = "jrydel92@gmail.com"
-    my_pw = "123"
+    my_pw = os.environ.get("G_SMTP_PW")
     letter_list = os.listdir(folder)
     letter = choice(letter_list)
     write_and_send()
-
-
