@@ -16,7 +16,7 @@ def write_and_send():
                 connection.starttls()
                 connection.login(user=my_email, password=my_pw)
                 connection.sendmail(
-                    from_addr=my_email, to_addrs="address@example.com",
+                    from_addr=my_email, to_addrs=os.environ.get("SOME_EMAIL"),
                     msg=f"Subject: Happy Birthday\n\n{email}")
         except FileNotFoundError:
             messagebox.showwarning(title="File Not Found", message="This file does not exist.")
